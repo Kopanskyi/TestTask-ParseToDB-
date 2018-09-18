@@ -14,7 +14,9 @@
         }*@
 
         <form asp-action="UploadFile" asp-controller="Home" method="post" enctype="multipart/form-data">
-            Select a file: <input type="file" name="file"><br><br>
+            Word to search: <input type="text" name="wordToSearch" id="wordToSearch">
+            <h4>@ViewBag.Text</h4>
+            Select a .txt file: <input type="file" name="file"><br><br>
             <input type="submit">
         </form>
 
@@ -24,6 +26,7 @@
             <br /><br />
             <asp:Label runat="server" id="StatusLabel" text="Upload status: " />
         </form>*@
+
     </div>
 </body>
 </html>

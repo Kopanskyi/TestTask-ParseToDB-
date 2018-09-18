@@ -1,0 +1,7 @@
+Uploading small files with model binding
+To upload small files, you can use a multi-part HTML form or construct a POST request using JavaScript. An example form using Razor, which supports multiple uploaded files, is shown below:
+In order to support file uploads, HTML forms must specify an enctype of multipart/form-data. The files input element shown above supports uploading multiple files. Omit the multiple attribute on this input element to allow just a single file to be uploaded. The above markup renders in a browser as:
+The individual files uploaded to the server can be accessed through Model Binding using the IFormFile interface. IFormFile has the following structure:
+When uploading files using model binding and the IFormFile interface, the action method can accept either a single IFormFile or an IEnumerable<IFormFile> (or List<IFormFile>) representing several files. The following example loops through one or more uploaded files, saves them to the local file system, and returns the total number and size of files uploaded.
+
+Warning: The following code uses GetTempFileName, which throws an IOException if more than 65535 files are created without deleting previous temporary files. A real app should either delete temporary files or use GetTempPath and GetRandomFileName to create temporary file names. The 65535 files limit is per server, so another app on the server can use up all 65535 files.
