@@ -2,42 +2,46 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 using TestTask_ParseToDB_.Models;
 
 namespace TestTask_ParseToDB_.Controllers
 {
     public class HomeController : Controller
     {
+        private IHostingEnvironment environment;
+
+        public HomeController(IHostingEnvironment hostingEnvirontment)
+        {
+            environment = hostingEnvirontment;
+        }
+
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult About()
+        [HttpPost]
+        public async Task<IActionResult> UploadFile(IFormFile file)
         {
-            ViewData["Message"] = "Your application description page.";
+            if (file == null || file.Length == 0) return Content("file not selected");
 
-            return View();
-        }
+            string rootPath = environment.WebRootPath;
+            string filePath = $@"{rootPath}\UploadedFiles\{file.FileName}";
 
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
 
-            return View();
-        }
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+            //ViewData["FilePath"] = filePath;
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View("Index");
         }
     }
 }
