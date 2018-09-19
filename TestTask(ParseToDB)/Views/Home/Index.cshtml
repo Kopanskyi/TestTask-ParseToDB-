@@ -8,24 +8,35 @@
 </head>
 <body>
     <div>
-        @*@using (Html.BeginForm("Index", "Home", FormMethod.Post))
-        {
-            <input type="file" name="file" />
-        }*@
-
         <form asp-action="UploadFile" asp-controller="Home" method="post" enctype="multipart/form-data">
             Word to search: <input type="text" name="wordToSearch" id="wordToSearch">
             <h4>@ViewBag.Text</h4>
             Select a .txt file: <input type="file" name="file"><br><br>
             <input type="submit">
         </form>
+        <br>
 
-        @*<form id="form1" runat="server">
-            <asp:FileUpload id="FileUploadControl" runat="server" />
-            <asp:Button runat="server" id="UploadButton" text="Upload" onclick="UploadButton_Click" />
-            <br /><br />
-            <asp:Label runat="server" id="StatusLabel" text="Upload status: " />
-        </form>*@
+        <table style="width: 100%">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Word To Search</th>
+                    <th>Sentence</th>
+                    <th>Times The Word Occurs In The Sentence</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Sentences item in ViewBag.Sentences)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.WordToSearch</td>
+                        <td>@item.TimesWordOccursInSentence</td>
+                        <td>@item.Sentence</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
     </div>
 </body>

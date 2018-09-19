@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
+using System.Text.RegularExpressions;
 using TestTask_ParseToDB_.Models;
 
 namespace TestTask_ParseToDB_.Controllers
@@ -24,12 +25,15 @@ namespace TestTask_ParseToDB_.Controllers
         public IActionResult Index()
         {
             ViewBag.Text = "";
+            AddSentencesToViewBag();
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> UploadFile(IFormFile file)
         {
+            AddSentencesToViewBag();
+
             if (file == null || file.Length == 0)
             {
                 ViewBag.Text = "File not selected";
@@ -75,7 +79,34 @@ namespace TestTask_ParseToDB_.Controllers
             string wordToSearch = string.Format("{0}", Request.Form["wordToSearch"]);
             string[] sentencesToParse = textFromFile.Split('.');
 
+            List<Sentences> sentencesWithTheWord = new List<Sentences>();
 
+            foreach (var item in sentencesToParse)
+            {
+                if (item.Contains(wordToSearch))
+                {
+                    sentencesWithTheWord.Add(new Sentences
+                    {
+                        Sentence = item,
+                        TimesWordOccursInSentence = Regex.Matches(item, wordToSearch).Count,
+                        WordToSearch = wordToSearch
+                    });
+                }
+            }
+
+            WriteToDb(sentencesWithTheWord);
+        }
+
+        private void WriteToDb(IEnumerable<Sentences> collection)
+        {
+            DbContextCreation.DbContext.Sentences.AddRange(collection);
+            DbContextCreation.DbContext.SaveChanges();
+        }
+
+        private void AddSentencesToViewBag()
+        {
+            ViewBag.Sentences = DbContextCreation.DbContext.Sentences.
+                OrderByDescending(s => s.Id).ToList();
         }
     }
 }
